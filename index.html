@@ -76,7 +76,7 @@
     "nama": "Budi Santoso",
     "email": "budi.s@example.com",
     "password": "password123",
-    "picture": "http://path.to/profile.jpg",
+    "picture": "http://path.to/profile.jpg", // Opsional
     "kodeReferralUpline": "a1b2c3d4" // Opsional
 }</code></pre>
                 </article>
@@ -162,6 +162,40 @@
                 <div class="p-4 bg-red-100 border-l-4 border-red-500 text-red-700 rounded-r-lg mb-6">
                     <p><strong class="font-semibold">Perhatian:</strong> Semua endpoint di bawah ini memerlukan hak akses sebagai **ADMIN**.</p>
                 </div>
+                
+                <article class="api-endpoint api-post bg-white p-6 rounded-lg shadow-sm mb-6">
+                    <div class="flex items-center mb-2">
+                        <span class="text-sm font-bold bg-green-600 text-white px-3 py-1 rounded-full">POST</span>
+                        <code class="text-lg font-mono ml-3">/api/admin/projects</code>
+                    </div>
+                    <p class="text-gray-600 mb-4">Membuat proyek baru beserta semua field dinamis yang diperlukan. Aksi ini menciptakan proyek dan field-field terkait dalam satu transaksi.</p>
+                    <h4 class="font-semibold mb-2">Request Body:</h4>
+                    <pre class="bg-gray-100 p-4 rounded-md text-sm overflow-x-auto"><code>{
+    "namaProyek": "Pendaftaran Merchant Baru",
+    "iconUrl": "https://path.to/icon.png",
+    "nilaiProyek": 25000,
+    "fields": [
+        {
+            "namaField": "Nama Pemilik",
+            "tipeField": "TEXT"
+        },
+        {
+            "namaField": "Nomor KTP",
+            "tipeField": "TEXT",
+            "wajibDiisi": true
+        },
+        {
+            "namaField": "Foto KTP",
+            "tipeField": "IMAGE",
+            "wajibDiisi": true
+        },
+        {
+            "namaField": "Deskripsi Usaha",
+            "tipeField": "TEXTAREA"
+        }
+    ]
+}</code></pre>
+                </article>
                 
                 <article class="api-endpoint api-put bg-white p-6 rounded-lg shadow-sm mb-6">
                     <div class="flex items-center mb-2">
