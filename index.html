@@ -13,7 +13,7 @@
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #111827;
+            background-color: #0c132a;
             color: #d1d5db;
         }
         pre, code {
@@ -24,8 +24,8 @@
         .method-put { background-color: #f59e0b; color: white; }
         .method-delete { background-color: #ef4444; color: white; }
         .endpoint-card {
-            background-color: #1f2937;
-            border: 1px solid #374151;
+            background-color: #1a203c;
+            border: 1px solid #2d3748;
             border-radius: 0.75rem;
             padding: 1.5rem;
             margin-bottom: 2rem;
@@ -33,7 +33,7 @@
         }
         .token-required::after {
             content: 'Authentication Required';
-            background-color: #ef4444;
+            background-color: #c53030;
             color: white;
             padding: 0.15rem 0.5rem;
             font-size: 0.75rem;
@@ -41,13 +41,19 @@
             margin-left: 0.75rem;
             font-weight: 500;
         }
+        .sidebar-gradient {
+            background: linear-gradient(to bottom, #0c132a, #1a203c);
+        }
+        .main-gradient {
+             background: linear-gradient(180deg, #0c132a 0%, #111827 50%, #1a203c 100%);
+        }
     </style>
 </head>
 <body class="antialiased">
 
     <div class="flex min-h-screen">
         <!-- Sidebar -->
-        <aside class="w-72 bg-gray-900 border-r border-gray-700 p-6 fixed h-full hidden lg:block overflow-y-auto">
+        <aside class="w-72 sidebar-gradient border-r border-gray-700 p-6 fixed h-full hidden lg:block overflow-y-auto">
             <h1 class="text-xl font-bold text-white">TheBaxLancer API</h1>
             <p class="text-sm text-gray-400 mt-1">Dokumentasi Lengkap v1.3</p>
             <nav class="mt-8">
@@ -95,7 +101,7 @@
         </aside>
 
         <!-- Main Content -->
-        <main id="api-content" class="flex-1 lg:ml-72">
+        <main id="api-content" class="flex-1 lg:ml-72 main-gradient">
             <div class="p-6 md:p-10">
 
                 <!-- Header with Download Button -->
@@ -133,9 +139,21 @@
     "nama": "Budi Santoso",
     "email": "budi.santoso@example.com",
     "password": "password123",
-    "tglLahir": "1995-12-25", // Opsional
-    "nomorTelepon": "081234567890", // Opsional
+    "tglLahir": "1995-12-25",         // Opsional
+    "nomorTelepon": "081234567890",   // Opsional
+    "kecamatan": "Cibinong",           // Opsional
+    "domisili": "Bogor",               // Opsional
+    "fotoKtp": "https://url.to/ktp.jpg", // Opsional
+    "bankName": "BCA",                 // Opsional, enum: BCA, MANDIRI, UOB, CIMB, BNI, BRI
+    "noRekening": "1234567890",         // Opsional
     "kodeReferralUpline": "SAN123BUDXYZ" // Opsional
+}</code></pre>
+                             <h4 class="font-semibold pt-4 text-gray-300">Success Response (201 Created):</h4>
+                            <pre class="bg-gray-800 text-white p-4 rounded-lg text-sm mt-2"><code>{
+    "id": 1,
+    "nama": "Budi Santoso",
+    "email": "budi.santoso@example.com",
+    "kodeReferral": "OSO123BUDXYZ"
 }</code></pre>
                         </div>
                         <div id="auth-login" class="endpoint-card">
@@ -144,6 +162,10 @@
                                 <code class="text-md font-semibold text-gray-200">/auth/login</code>
                             </div>
                             <p class="text-gray-400 mt-2">Login untuk mendapatkan token JWT.</p>
+                             <h4 class="font-semibold pt-4 text-gray-300">Success Response (200 OK):</h4>
+                            <pre class="bg-gray-800 text-white p-4 rounded-lg text-sm mt-2"><code>{
+    "accessToken": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+}</code></pre>
                         </div>
                     </div>
 
@@ -155,7 +177,25 @@
                                 <span class="method-get font-bold text-sm px-2.5 py-1 rounded-md">GET</span>
                                 <code class="text-md font-semibold text-gray-200">/users/me</code>
                             </div>
-                            <p class="text-gray-400 mt-2">Mendapatkan detail profil dan riwayat (laporan) submission pengguna yang sedang login.</p>
+                            <p class="text-gray-400 mt-2">Mendapatkan detail profil dan riwayat (laporan) submission pengguna yang sedang login. Mendukung paginasi untuk downline dan submission dengan query <code class="bg-gray-800 p-1 rounded-md text-sm text-yellow-300">?submissionPage=1&downlinePage=1&pageSize=10</code>.</p>
+                             <h4 class="font-semibold pt-4 text-gray-300">Success Response (200 OK):</h4>
+                            <pre class="bg-gray-800 text-white p-4 rounded-lg text-sm mt-2"><code>{
+    "profile": {
+        "id": 1,
+        "nama": "Budi Santoso",
+        "email": "budi.santoso@example.com",
+        "balance": "150000.00",
+        "submissions": [
+            { "id": 201, "status": "APPROVED", "project": { "namaProyek": "Desain Logo" } }
+        ],
+        "downlines": [
+            { "id": 5, "nama": "Charlie", "email": "charlie@example.com" }
+        ],
+        "totalDownlines": 1,
+        "totalSubmissions": 1
+        // ... data lainnya
+    }
+}</code></pre>
                         </div>
                         <div id="user-picture" class="endpoint-card">
                             <div class="flex items-center gap-3 token-required">
@@ -207,7 +247,7 @@ Value: [File: screenshot.png]</code></pre>
                                 <span class="method-get font-bold text-sm px-2.5 py-1 rounded-md">GET</span>
                                 <code class="text-md font-semibold text-gray-200">/admin/users</code>
                             </div>
-                            <p class="text-gray-400 mt-2">Mendapatkan daftar semua user. Dapat difilter dengan query, contoh: <code class="bg-gray-800 p-1 rounded-md text-sm text-yellow-300">/admin/users?status=PENDING</code>.</p>
+                            <p class="text-gray-400 mt-2">Mendapatkan daftar semua user. Mendukung paginasi dan filter, contoh: <code class="bg-gray-800 p-1 rounded-md text-sm text-yellow-300">/admin/users?status=PENDING&page=1&pageSize=20</code>.</p>
                         </div>
                         <div id="admin-users-edit" class="endpoint-card">
                             <div class="flex items-center gap-3 token-required">
@@ -220,6 +260,8 @@ Value: [File: screenshot.png]</code></pre>
 Key: email, Value: "emailbaru@example.com"
 Key: role, Value: "ADMIN"
 Key: balance, Value: "50000"
+Key: bankName, Value: "BRI"
+Key: noRekening, Value: "0987654321"
 Key: picture, Value: [File: new_avatar.jpg] // Opsional</code></pre>
                         </div>
                         <div id="admin-projects-create" class="endpoint-card">
@@ -232,6 +274,7 @@ Key: picture, Value: [File: new_avatar.jpg] // Opsional</code></pre>
                             <pre class="bg-gray-800 text-white p-4 rounded-lg text-sm mt-2"><code>{
     "namaProyek": "Proyek Baru",
     "nilaiProyek": 50000,
+    "deskripsi": "Deskripsi singkat mengenai proyek ini.",
     "projectUrl": "https://example.com",
     "iconUrl": "https://url.to/icon.png",
     "fields": [
@@ -240,12 +283,12 @@ Key: picture, Value: [File: new_avatar.jpg] // Opsional</code></pre>
     ]
 }</code></pre>
                         </div>
-                        <div id="admin-submissions-get-one" class="endpoint-card">
+                        <div id="admin-submissions-get-all" class="endpoint-card">
                             <div class="flex items-center gap-3 token-required">
                                 <span class="method-get font-bold text-sm px-2.5 py-1 rounded-md">GET</span>
-                                <code class="text-md font-semibold text-gray-200">/admin/submissions/{id}</code>
+                                <code class="text-md font-semibold text-gray-200">/admin/submissions</code>
                             </div>
-                            <p class="text-gray-400 mt-2">Mendapatkan detail lengkap satu submission untuk direview.</p>
+                            <p class="text-gray-400 mt-2">Mendapatkan daftar semua submission. Mendukung paginasi dan filter status.</p>
                         </div>
                     </div>
 
@@ -268,9 +311,9 @@ Key: picture, Value: [File: new_avatar.jpg] // Opsional</code></pre>
             html2canvas(content, {
                 scale: 2,
                 useCORS: true,
-                backgroundColor: '#111827',
+                backgroundColor: '#0c132a',
                 onclone: (document) => {
-                    document.body.style.background = '#111827';
+                    document.body.style.background = '#0c132a';
                 }
             }).then(canvas => {
                 const imgData = canvas.toDataURL('image/png');
