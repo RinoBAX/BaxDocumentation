@@ -1,329 +1,794 @@
 <!DOCTYPE html>
-<html lang="id" class="scroll-smooth">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dokumentasi API Lengkap - TheBaxLancer</title>
+    <title>Dokumentasi API BAX</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Source+Serif+4:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --white: #FFFFFF;
+            --off-white: #F8F9FA;
+            --light-blue-gray: #F0F4F8;
+            --slate-mid: #64748B;
+            --navy-dark: #172554; /* blue-950 */
+            --navy-light: #1E3A8A; /* blue-800 */
+            --sky-mid: #0284C7; /* sky-600 */
+        }
+        html {
+            scroll-behavior: smooth;
+        }
         body {
-            font-family: 'Poppins', sans-serif;
-            background-color: #1a101f;
-            color: #e0e0e0;
+            font-family: 'Inter', sans-serif;
+            background-color: var(--off-white);
+            color: #334155; /* slate-700 */
         }
-        pre, code {
-            font-family: 'JetBrains Mono', monospace;
+        #main-content {
+            background: linear-gradient(180deg, var(--white) 0%, var(--light-blue-gray) 100%);
         }
-        .main-gradient {
-            background: linear-gradient(180deg, #1a101f 0%, #110c18 100%);
+        h1, h2, h3, h4 {
+            font-family: 'Source Serif 4', serif;
+            color: var(--navy-dark);
         }
-        .sidebar-gradient {
-            background: #110c18;
+        .sidebar {
+            background-color: var(--white);
+            border-right: 1px solid #E2E8F0; /* slate-200 */
         }
-        .method-post { background-color: #34d399; color: #064e3b; }
-        .method-get { background-color: #60a5fa; color: #1e3a8a; }
-        .method-put { background-color: #fbbf24; color: #78350f; }
-        .method-delete { background-color: #f87171; color: #7f1d1d; }
-        .endpoint-card {
-            background-color: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 0.75rem;
-            padding: 1.5rem;
+        .sidebar-link {
+            display: block;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            transition: all 0.25s ease-in-out;
+            font-weight: 500;
+            color: #475569; /* slate-600 */
+            margin-bottom: 0.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+        .sidebar-link:before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 3px;
+            background-color: var(--sky-mid);
+            transform: scaleY(0);
+            transition: transform 0.25s ease-in-out;
+        }
+        .sidebar-link:hover, .sidebar-link.active {
+            background-color: #F0F9FF; /* sky-50 */
+            color: var(--sky-mid);
+        }
+        .sidebar-link.active:before {
+            transform: scaleY(1);
+        }
+        .api-section {
+            padding-top: 5rem; /* For scroll spy offset */
+            margin-top: -4rem;
+            padding-bottom: 2rem;
+        }
+        .section-separator {
+            border-bottom: 1px solid #E2E8F0;
             margin-bottom: 2rem;
-            scroll-margin-top: 90px;
         }
-        .token-required::after {
-            content: 'AUTH';
-            background-color: #db2777;
-            color: white;
-            padding: 0.15rem 0.5rem;
-            font-size: 0.7rem;
+        .api-endpoint {
+            background-color: var(--white);
+            border: 1px solid #E2E8F0; /* slate-200 */
+            border-radius: 0.75rem;
+            margin-bottom: 2rem;
+            overflow: hidden;
+            box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            transition: all 0.3s ease;
+        }
+        .api-endpoint:hover {
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.07), 0 4px 6px -4px rgb(0 0 0 / 0.07);
+            transform: translateY(-3px);
+            border-color: #D1D5DB;
+        }
+        .endpoint-header {
+            padding: 1rem 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid #E2E8F0;
+        }
+        .endpoint-method {
+            font-weight: 700;
+            padding: 0.3rem 0.85rem;
             border-radius: 9999px;
-            margin-left: 0.75rem;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .method-post { border: 1px solid #3B82F6; color: #3B82F6; background-color: #EFF6FF; }
+        .method-get { border: 1px solid #10B981; color: #10B981; background-color: #F0FDF4; }
+        .method-put { border: 1px solid #F59E0B; color: #F59E0B; background-color: #FFFBEB; }
+        .method-delete { border: 1px solid #EF4444; color: #EF4444; background-color: #FEF2F2; }
+        .endpoint-path {
+            font-family: monospace;
+            font-size: 1rem;
+            color: var(--navy-light);
             font-weight: 600;
+            margin-left: 1rem;
+        }
+        .endpoint-details {
+            padding: 1.5rem;
+        }
+        .details-title {
+            font-weight: 600;
+            margin-top: 1.25rem;
+            margin-bottom: 0.75rem;
+            color: var(--navy-light);
+            font-size: 1.1rem;
+            font-family: 'Inter', sans-serif;
+        }
+        pre {
+            background-color: #020617; /* black */
+            color: #E2E8F0; /* slate-200 */
+            padding: 1.25rem;
+            border-radius: 0.5rem;
+            overflow-x: auto;
+            border: 1px solid #1E293B; /* slate-800 */
+        }
+        code {
+            background-color: #e2e8f0;
+            color: #1e293b;
+            padding: 0.2rem 0.4rem;
+            border-radius: 0.25rem;
+            font-family: monospace;
+            font-size: 0.9em;
+        }
+        .badge {
+            display: inline-block;
+            padding: 0.25em 0.6em;
+            font-size: 75%;
+            font-weight: 700;
+            line-height: 1;
+            text-align: center;
+            white-space: nowrap;
+            vertical-align: baseline;
+            border-radius: 0.375rem;
+        }
+        .badge-admin { background-color: #FEF9C3; color: #713F12; }
+        .badge-super-admin { background-color: #FEE2E2; color: #991B1B; }
+        .badge-user { background-color: #DBEAFE; color: #1E40AF; }
+        
+        #download-pdf {
+            background: linear-gradient(45deg, #2563EB, #0284C7);
+            transition: all 0.3s ease-in-out;
+            box-shadow: 0 4px 15px 0 rgba(59, 130, 246, 0.4);
+        }
+        #download-pdf:hover {
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 7px 20px 0 rgba(59, 130, 246, 0.5);
         }
     </style>
 </head>
-<body class="antialiased">
-
-    <div class="flex min-h-screen">
-        <!-- Sidebar -->
-        <aside class="w-72 sidebar-gradient border-r border-gray-800 p-6 fixed h-full hidden lg:block overflow-y-auto">
-            <h1 class="text-xl font-bold text-white">TheBaxLancer API</h1>
-            <p class="text-sm text-gray-400 mt-1">Dokumentasi Lengkap v1.6</p>
-            <nav class="mt-8">
-                <h2 class="text-xs font-semibold text-gray-500 uppercase tracking-wider">Mulai</h2>
-                <ul class="mt-3 space-y-2">
-                    <li><a href="#introduction" class="text-gray-400 hover:text-white">Pendahuluan</a></li>
-                </ul>
-
-                <h2 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mt-8">Otentikasi</h2>
-                <ul class="mt-3 space-y-2">
-                    <li><a href="#auth-register" class="text-gray-400 hover:text-white">Registrasi User</a></li>
-                    <li><a href="#auth-login" class="text-gray-400 hover:text-white">Login User</a></li>
-                    <li><a href="#auth-check-token" class="text-gray-400 hover:text-white">Check Token</a></li>
-                </ul>
-                
-                <h2 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mt-8">User</h2>
-                <ul class="mt-3 space-y-2">
-                    <li><a href="#user-me" class="text-gray-400 hover:text-white">Get Profil</a></li>
-                    <li><a href="#user-update-profile" class="text-gray-400 hover:text-white">Update Profil</a></li>
-                    <li><a href="#user-update-picture" class="text-gray-400 hover:text-white">Update Foto Profil</a></li>
-                    <li><a href="#user-get-submissions" class="text-gray-400 hover:text-white">Get Laporan Submission</a></li>
-                    <li><a href="#user-get-downline" class="text-gray-400 hover:text-white">Get Downline</a></li>
-                    <li><a href="#user-request-withdrawal" class="text-gray-400 hover:text-white">Request Withdrawal</a></li>
-                </ul>
-                
-                <h2 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mt-8">Proyek</h2>
-                <ul class="mt-3 space-y-2">
-                    <li><a href="#projects-get" class="text-gray-400 hover:text-white">Get Semua Proyek</a></li>
-                    <li><a href="#projects-submit" class="text-gray-400 hover:text-white">Submit Pekerjaan</a></li>
-                </ul>
-                
-                <h2 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mt-8">Admin & Super Admin</h2>
-                <ul class="mt-3 space-y-2">
-                    <li><a href="#admin-users-get" class="text-gray-400 hover:text-white">Get Semua User</a></li>
-                    <li><a href="#admin-users-edit" class="text-gray-400 hover:text-white">Edit User</a></li>
-                    <li><a href="#admin-users-approve" class="text-gray-400 hover:text-white">Approve Registrasi</a></li>
-                    <li><a href="#admin-projects-create" class="text-gray-400 hover:text-white">Buat Proyek Baru</a></li>
-                    <li><a href="#admin-projects-edit" class="text-gray-400 hover:text-white">Edit Proyek</a></li>
-                    <li><a href="#admin-submissions-get" class="text-gray-400 hover:text-white">Get Submission by User</a></li>
-                    <li><a href="#admin-submissions-approve" class="text-gray-400 hover:text-white">Approve Submission</a></li>
-                    <li><a href="#admin-submissions-reject" class="text-gray-400 hover:text-white">Reject Submission</a></li>
-                </ul>
+<body class="text-slate-700">
+    <div class="flex">
+        <!-- Sidebar Navigation -->
+        <aside class="w-72 h-screen fixed top-0 left-0 p-6 sidebar hidden lg:block">
+            <div class="flex items-center mb-8">
+                <div class="w-10 h-10 bg-navy-dark rounded-lg flex items-center justify-center font-bold text-white text-xl mr-3">B</div>
+                <h2 class="text-2xl font-bold text-navy-dark">BAX API</h2>
+            </div>
+            <nav>
+                <a href="#auth" class="sidebar-link active">Authentication</a>
+                <a href="#news" class="sidebar-link">News</a>
+                <a href="#users" class="sidebar-link">Users</a>
+                <a href="#admin-users" class="sidebar-link">Admin: Users</a>
+                <a href="#youtube" class="sidebar-link">YouTube Links</a>
+                <a href="#projects" class="sidebar-link">Projects</a>
+                <a href="#submissions" class="sidebar-link">Submissions</a>
+                <a href="#withdrawals" class="sidebar-link">Withdrawals</a>
             </nav>
         </aside>
 
         <!-- Main Content -->
-        <main id="api-content" class="flex-1 lg:ml-72 main-gradient">
-            <div class="p-6 md:p-10">
-
-                <div class="flex justify-between items-center mb-10 sticky top-0 bg-gray-900 bg-opacity-50 backdrop-blur-sm py-4 z-10 -mx-6 md:-mx-10 px-6 md:px-10">
-                    <h1 class="text-3xl font-bold text-white">Dokumentasi API Lengkap</h1>
-                    <button id="download-btn" class="bg-pink-600 text-white font-semibold px-4 py-2 rounded-lg shadow-lg hover:bg-pink-700 focus:outline-none focus:ring-2 focus:ring-pink-500 focus:ring-offset-2 focus:ring-offset-gray-900 transition-colors">
-                        Download PDF
+        <div id="main-content" class="flex-1 lg:ml-72">
+            <div id="content" class="container mx-auto px-4 sm:px-6 lg:px-12 py-12">
+                <header class="flex justify-between items-center mb-12 border-b border-slate-200 pb-8">
+                    <div>
+                        <h1 class="text-5xl font-bold">Dokumentasi API</h1>
+                        <p class="mt-2 text-lg text-slate-500">Panduan lengkap untuk integrasi dengan BAX API.</p>
+                    </div>
+                    <button id="download-pdf" class="text-white font-semibold py-3 px-6 rounded-lg whitespace-nowrap">
+                        Unduh PDF
                     </button>
-                </div>
+                </header>
 
-                <section id="introduction" class="mb-16">
-                    <h2 class="text-2xl font-semibold border-b border-gray-700 pb-2 text-white">Pendahuluan</h2>
-                    <div class="mt-4 space-y-4 text-gray-300">
-                        <p>Selamat datang di dokumentasi API TheBaxLancer. API ini memungkinkan Anda untuk berinteraksi dengan layanan kami secara terprogram. API ini dirancang dengan prinsip REST.</p>
-                        <p>Base URL untuk semua endpoint adalah: <code class="bg-gray-800 p-1 rounded-md text-sm text-pink-400">/api</code></p>
-                        <p>Semua request dan response body menggunakan format JSON, kecuali untuk endpoint yang mengunggah file. Endpoint yang memerlukan otentikasi harus menyertakan <code class="bg-gray-800 p-1 rounded-md text-sm text-pink-400">Authorization</code> header dengan format <code class="bg-gray-800 p-1 rounded-md text-sm text-pink-400">Bearer {TOKEN}</code>.</p>
-                    </div>
-                </section>
+                <main>
+                    <!-- Authentication Section -->
+                    <section id="auth" class="api-section">
+                        <h2 class="text-3xl font-semibold mb-4">Authentication</h2>
+                        <p class="mb-8 text-slate-500 max-w-3xl">Endpoint untuk registrasi, login, dan manajemen token pengguna. Pastikan untuk menangani token JWT dengan aman di sisi klien.</p>
+                        <div class="section-separator"></div>
+                        
+                        <div class="api-endpoint">
+                            <div class="endpoint-header">
+                                <div><span class="endpoint-method method-post">POST</span><span class="endpoint-path">/api/auth/register</span></div>
+                            </div>
+                            <div class="endpoint-details">
+                                <p>Mendaftarkan pengguna baru.</p>
+                                <h4 class="details-title">Request Body</h4><pre><code>{
+    "nama": "string (required)",
+    "email": "string (required, unique)",
+    "password": "string (required)",
+    "tglLahir": "string (date, optional)",
+    "nomorTelepon": "string (optional)",
+    "kecamatan": "string (optional)",
+    "domisili": "string (optional)",
+    "fotoKtp": "string (url, optional)",
+    "bankName": "string (optional)",
+    "noRekening": "string (optional)",
+    "kodeReferralUpline": "string (optional)"
+}</code></pre>
+                                <h4 class="details-title">Response (201)</h4><pre><code>{
+    "id": "integer",
+    "nama": "string",
+    "email": "string",
+    "kodeReferral": "string"
+}</code></pre>
+                            </div>
+                        </div>
 
-                <div class="space-y-12">
+                        <div class="api-endpoint">
+                            <div class="endpoint-header">
+                                <div><span class="endpoint-method method-post">POST</span><span class="endpoint-path">/api/auth/login</span></div>
+                            </div>
+                            <div class="endpoint-details">
+                                <p>Login pengguna dan mengembalikan JWT access token.</p>
+                                <h4 class="details-title">Request Body</h4><pre><code>{
+    "email": "string (required)",
+    "password": "string (required)"
+}</code></pre>
+                                <h4 class="details-title">Response (200)</h4><pre><code>{
+    "id": "integer",
+    "nama": "string",
+    "email": "string",
+    // ... other user fields
+    "accessToken": "string (JWT)"
+}</code></pre>
+                            </div>
+                        </div>
+
+                        <div class="api-endpoint">
+                            <div class="endpoint-header">
+                                <div><span class="endpoint-method method-get">GET</span><span class="endpoint-path">/api/auth/check-token</span></div>
+                                <span class="badge badge-user">User Auth</span>
+                            </div>
+                            <div class="endpoint-details">
+                                <p>Memverifikasi token pengguna saat ini dan mengembalikan data pengguna.</p>
+                                <h4 class="details-title">Headers</h4><pre><code>{ "Authorization": "Bearer YOUR_JWT_TOKEN" }</code></pre>
+                                <h4 class="details-title">Response (200)</h4><pre><code>{
+    "accessToken": "string (JWT)",
+    "user": {
+        "id": "integer",
+        "nama": "string",
+        "email": "string",
+        // ... other user data excluding sensitive fields
+    }
+}</code></pre>
+                            </div>
+                        </div>
+
+                        <div class="api-endpoint">
+                            <div class="endpoint-header">
+                                <div><span class="endpoint-method method-post">POST</span><span class="endpoint-path">/api/auth/logout</span></div>
+                                <span class="badge badge-user">User Auth</span>
+                            </div>
+                            <div class="endpoint-details">
+                                <p>Logout pengguna (saat ini hanya mengembalikan pesan sukses).</p>
+                                <h4 class="details-title">Headers</h4><pre><code>{ "Authorization": "Bearer YOUR_JWT_TOKEN" }</code></pre>
+                                <h4 class="details-title">Response (200)</h4><pre><code>{ "message": "Logout berhasil, sultan konyol wkwkwk." }</code></pre>
+                            </div>
+                        </div>
+                    </section>
                     
-                    <div>
-                        <h3 class="text-xl font-semibold mb-6 text-white border-l-4 border-emerald-500 pl-4">Otentikasi</h3>
-                        <div id="auth-register" class="endpoint-card">
-                            <div class="flex items-center gap-3">
-                                <span class="method-post font-bold text-sm px-2.5 py-1 rounded-full">POST</span>
-                                <code class="text-md font-semibold text-gray-200">/auth/register</code>
+                    <!-- News Section -->
+                    <section id="news" class="api-section">
+                        <h2 class="text-3xl font-semibold mb-4">News</h2>
+                        <p class="mb-8 text-slate-500 max-w-3xl">CRUD untuk manajemen berita dan informasi. Endpoint ini digunakan untuk menampilkan dan mengelola konten berita.</p>
+                        <div class="section-separator"></div>
+                        <div class="api-endpoint">
+                            <div class="endpoint-header">
+                                <div><span class="endpoint-method method-get">GET</span><span class="endpoint-path">/api/news</span></div>
                             </div>
-                            <p class="text-gray-400 mt-2">Mendaftarkan user baru.</p>
-                            <h4 class="font-semibold pt-4 text-gray-300">Request Body (application/json):</h4>
-                            <pre class="bg-gray-800 text-white p-4 rounded-lg text-sm mt-2"><code>{
-    "nama": "Rino",
-    "email": "rino@example.com",
-    "password": "password123",
-    "nomorTelepon": "081234567890",   <span class="text-gray-500">// Opsional</span>
-    "bankName": "BCA",                 <span class="text-gray-500">// Opsional</span>
-    "noRekening": "1234567890",         <span class="text-gray-500">// Opsional</span>
-    "kodeReferralUpline": "SAN123BUDXYZ" <span class="text-gray-500">// Opsional</span>
-}</code></pre>
-                        </div>
-                        <div id="auth-login" class="endpoint-card">
-                           <div class="flex items-center gap-3">
-                                <span class="method-post font-bold text-sm px-2.5 py-1 rounded-full">POST</span>
-                                <code class="text-md font-semibold text-gray-200">/auth/login</code>
+                            <div class="endpoint-details">
+                                <p>Mengambil daftar semua item berita, diurutkan berdasarkan tanggal pembuatan.</p>
+                                <h4 class="details-title">Response (200)</h4><pre><code>[
+    {
+        "id": "integer",
+        "imageNews": "string (url)",
+        "description": "string",
+        "newsUrl": "string (url)",
+        "imageNewsUrl": "string (url)",
+        "tglDibuat": "datetime"
+    }
+]</code></pre>
                             </div>
-                            <p class="text-gray-400 mt-2">Login untuk mendapatkan token JWT.</p>
                         </div>
-                        <div id="auth-check-token" class="endpoint-card">
-                           <div class="flex items-center gap-3 token-required">
-                                <span class="method-get font-bold text-sm px-2.5 py-1 rounded-full">GET</span>
-                                <code class="text-md font-semibold text-gray-200">/auth/check-token</code>
+                        <div class="api-endpoint">
+                            <div class="endpoint-header">
+                                <div><span class="endpoint-method method-post">POST</span><span class="endpoint-path">/api/admin/news/submit</span></div>
+                                <div><span class="badge badge-admin">ADMIN</span> <span class="badge badge-super-admin">SUPER ADMIN</span></div>
                             </div>
-                            <p class="text-gray-400 mt-2">Memverifikasi token yang ada. Jika valid, akan mengembalikan data pengguna.</p>
+                            <div class="endpoint-details">
+                                <p>Membuat item berita baru. Membutuhkan multipart/form-data untuk unggah gambar.</p>
+                                <h4 class="details-title">Headers</h4><pre><code>{ "Authorization": "Bearer YOUR_JWT_TOKEN" }</code></pre>
+                                <h4 class="details-title">Request Body (form-data)</h4><pre><code>imageNews: file (required)
+description: string
+newsUrl: string
+imageNewsUrl: string</code></pre>
+                                <h4 class="details-title">Response (201)</h4><p>Mengembalikan objek berita yang baru dibuat.</p>
+                            </div>
                         </div>
-                    </div>
+                        <div class="api-endpoint">
+                            <div class="endpoint-header">
+                                <div><span class="endpoint-method method-put">PUT</span><span class="endpoint-path">/api/admin/news/update/:id</span></div>
+                                <div><span class="badge badge-admin">ADMIN</span> <span class="badge badge-super-admin">SUPER ADMIN</span></div>
+                            </div>
+                            <div class="endpoint-details">
+                                <p>Memperbarui item berita yang ada. Membutuhkan multipart/form-data jika gambar diperbarui.</p>
+                                <h4 class="details-title">Headers</h4><pre><code>{ "Authorization": "Bearer YOUR_JWT_TOKEN" }</code></pre>
+                                <h4 class="details-title">Request Body (form-data)</h4><pre><code>imageNews: file (optional)
+description: string
+newsUrl: string
+imageNewsUrl: string</code></pre>
+                                <h4 class="details-title">Response (200)</h4><p>Mengembalikan objek berita yang telah diperbarui.</p>
+                            </div>
+                        </div>
+                    </section>
 
-                    <div>
-                        <h3 class="text-xl font-semibold mb-6 text-white border-l-4 border-blue-500 pl-4">User</h3>
-                        <div id="user-me" class="endpoint-card">
-                            <div class="flex items-center gap-3 token-required">
-                                <span class="method-get font-bold text-sm px-2.5 py-1 rounded-full">GET</span>
-                                <code class="text-md font-semibold text-gray-200">/users/me</code>
+                    <!-- User Section -->
+                    <section id="users" class="api-section">
+                        <h2 class="text-3xl font-semibold mb-4">Users</h2>
+                        <p class="mb-8 text-slate-500 max-w-3xl">Endpoint yang berkaitan dengan data pengguna yang sedang login, seperti profil dan downline.</p>
+                        <div class="section-separator"></div>
+                         <div class="api-endpoint">
+                            <div class="endpoint-header">
+                                <div><span class="endpoint-method method-get">GET</span><span class="endpoint-path">/api/users/me</span></div><span class="badge badge-user">User Auth</span>
                             </div>
-                            <p class="text-gray-400 mt-2">Mendapatkan detail profil, riwayat transaksi, dan paginasi untuk downline & submission.</p>
-                        </div>
-                        <div id="user-update-profile" class="endpoint-card">
-                            <div class="flex items-center gap-3 token-required">
-                                <span class="method-put font-bold text-sm px-2.5 py-1 rounded-full">PUT</span>
-                                <code class="text-md font-semibold text-gray-200">/users/me</code>
-                            </div>
-                            <p class="text-gray-400 mt-2">Mengupdate data profil. Email, rekening, foto KTP, dan saldo tidak bisa diubah.</p>
-                             <h4 class="font-semibold pt-4 text-gray-300">Request Body (application/json):</h4>
-                            <pre class="bg-gray-800 text-white p-4 rounded-lg text-sm mt-2"><code>{
-    "nama": "Rino Updated",
-    "password": "newpassword123",       <span class="text-gray-500">// Opsional</span>
-    "nomorTelepon": "089876543210",   <span class="text-gray-500">// Opsional</span>
-    "kecamatan": "Bojonggede",         <span class="text-gray-500">// Opsional</span>
-    "domisili": "Depok",               <span class="text-gray-500">// Opsional</span>
-    "tglLahir": "1990-01-15"          <span class="text-gray-500">// Opsional</span>
+                            <div class="endpoint-details">
+                                <p>Mengambil profil pengguna yang sedang terotentikasi.</p>
+                                <h4 class="details-title">Headers</h4><pre><code>{ "Authorization": "Bearer YOUR_JWT_TOKEN" }</code></pre>
+                                <h4 class="details-title">Response (200)</h4><pre><code>{
+    "profile": {
+        "id": "integer",
+        "nama": "string",
+        // ... other user fields
+        "totalDownlines": "integer",
+        "totalSubmissions": "integer"
+    }
 }</code></pre>
-                        </div>
-                        <div id="user-update-picture" class="endpoint-card">
-                            <div class="flex items-center gap-3 token-required">
-                                <span class="method-put font-bold text-sm px-2.5 py-1 rounded-full">PUT</span>
-                                <code class="text-md font-semibold text-gray-200">/users/me/picture</code>
                             </div>
-                            <p class="text-gray-400 mt-2">Mengganti foto profil.</p>
                         </div>
-                         <div id="user-get-submissions" class="endpoint-card">
-                            <div class="flex items-center gap-3 token-required">
-                                <span class="method-get font-bold text-sm px-2.5 py-1 rounded-full">GET</span>
-                                <code class="text-md font-semibold text-gray-200">/users/me/submissions</code>
+                         <div class="api-endpoint">
+                            <div class="endpoint-header">
+                                <div><span class="endpoint-method method-get">GET</span><span class="endpoint-path">/api/users/downline/:id</span></div><span class="badge badge-user">User Auth</span>
                             </div>
-                            <p class="text-gray-400 mt-2">Mendapatkan laporan submission milik pengguna yang login, dengan paginasi.</p>
-                        </div>
-                        <div id="user-get-downline" class="endpoint-card">
-                            <div class="flex items-center gap-3 token-required">
-                                <span class="method-get font-bold text-sm px-2.5 py-1 rounded-full">GET</span>
-                                <code class="text-md font-semibold text-gray-200">/users/downline/{id}</code>
-                            </div>
-                            <p class="text-gray-400 mt-2">Mendapatkan daftar downline dari user dengan ID tertentu.</p>
-                        </div>
-                        <div id="user-request-withdrawal" class="endpoint-card">
-                            <div class="flex items-center gap-3 token-required">
-                                <span class="method-post font-bold text-sm px-2.5 py-1 rounded-full">POST</span>
-                                <code class="text-md font-semibold text-gray-200">/users/withdrawals</code>
-                            </div>
-                            <p class="text-gray-400 mt-2">Mengajukan permintaan penarikan dana.</p>
-                             <h4 class="font-semibold pt-4 text-gray-300">Request Body (application/json):</h4>
-                            <pre class="bg-gray-800 text-white p-4 rounded-lg text-sm mt-2"><code>{
-    "totalWithdrawal": 50000
-}</code></pre>
-                        </div>
-                    </div>
-                    
-                    <div>
-                        <h3 class="text-xl font-semibold mb-6 text-white border-l-4 border-amber-500 pl-4">Admin & Super Admin</h3>
-                         <div id="admin-users-edit" class="endpoint-card">
-                            <div class="flex items-center gap-3 token-required">
-                                <span class="method-put font-bold text-sm px-2.5 py-1 rounded-full">PUT</span>
-                                <code class="text-md font-semibold text-gray-200">/admin/users/{id}</code>
-                            </div>
-                            <p class="text-gray-400 mt-2">Mengedit data pengguna (termasuk foto).</p>
-                             <h4 class="font-semibold pt-4 text-gray-300">Request Body (multipart/form-data):</h4>
-                            <pre class="bg-gray-800 text-white p-4 rounded-lg text-sm mt-2"><code>Key: nama, Value: "Nama Baru"
-Key: email, Value: "emailbaru@example.com"
-Key: role, Value: "ADMIN"
-Key: balance, Value: "50000" <span class="text-gray-500">// Hanya SUPER_ADMIN</span>
-Key: bankName, Value: "BRI"
-Key: noRekening, Value: "0987654321"
-Key: picture, Value: [File: new_avatar.jpg] <span class="text-gray-500">// Opsional</span></code></pre>
-                        </div>
-                        <div id="admin-projects-edit" class="endpoint-card">
-                            <div class="flex items-center gap-3 token-required">
-                                <span class="method-put font-bold text-sm px-2.5 py-1 rounded-full">PUT</span>
-                                <code class="text-md font-semibold text-gray-200">/admin/projects/{id}</code>
-                            </div>
-                            <p class="text-gray-400 mt-2">Mengedit proyek yang ada.</p>
-                             <h4 class="font-semibold pt-4 text-gray-300">Request Body (application/json):</h4>
-                            <pre class="bg-gray-800 text-white p-4 rounded-lg text-sm mt-2"><code>{
-    "namaProyek": "Proyek yang Diedit",
-    "nilaiProyek": 75000,
-    "deskripsi": "Deskripsi baru.",
-    "projectUrl": "https://baru.example.com",
-    "iconUrl": "https://url.to/new-icon.png",
-    "fields": [
-        { "label": "Nama Lengkap", "fieldType": "TEXT" }
+                            <div class="endpoint-details">
+                                <p>Mengambil pengguna downline untuk ID pengguna tertentu dengan paginasi.</p>
+                                <h4 class="details-title">Headers</h4><pre><code>{ "Authorization": "Bearer YOUR_JWT_TOKEN" }</code></pre>
+                                <h4 class="details-title">Query Parameters</h4><pre><code>page: integer (optional, default: 1)
+perPage: integer (optional, default: 10)</code></pre>
+                                <h4 class="details-title">Response (200)</h4><pre><code>{
+    "pagination": {
+        "totalItems": "integer",
+        "totalPages": "integer",
+        "perPage": "integer",
+        "currentPage": "integer"
+    },
+    "data": [
+        {
+            "id": "integer",
+            "nama": "string",
+            "email": "string"
+        }
     ]
 }</code></pre>
-                        </div>
-                        <div id="admin-submissions-approve" class="endpoint-card">
-                            <div class="flex items-center gap-3 token-required">
-                                <span class="method-put font-bold text-sm px-2.5 py-1 rounded-full">PUT</span>
-                                <code class="text-md font-semibold text-gray-200">/admin/submissions/{id}/approve</code>
                             </div>
-                            <p class="text-gray-400 mt-2">Menyetujui submission. Tidak memerlukan body.</p>
                         </div>
-                        <div id="admin-submissions-reject" class="endpoint-card">
-                            <div class="flex items-center gap-3 token-required">
-                                <span class="method-put font-bold text-sm px-2.5 py-1 rounded-full">PUT</span>
-                                <code class="text-md font-semibold text-gray-200">/admin/submissions/{id}/reject</code>
+                        <div class="api-endpoint">
+                            <div class="endpoint-header">
+                                <div><span class="endpoint-method method-put">PUT</span><span class="endpoint-path">/api/users/me</span></div><span class="badge badge-user">User Auth</span>
                             </div>
-                            <p class="text-gray-400 mt-2">Menolak submission.</p>
-                             <h4 class="font-semibold pt-4 text-gray-300">Request Body (application/json):</h4>
-                            <pre class="bg-gray-800 text-white p-4 rounded-lg text-sm mt-2"><code>{
-    "catatanAdmin": "Screenshot tidak jelas, mohon unggah ulang."
+                            <div class="endpoint-details">
+                                <p>Memperbarui profil pengguna yang sedang terotentikasi.</p>
+                                <h4 class="details-title">Headers</h4><pre><code>{ "Authorization": "Bearer YOUR_JWT_TOKEN" }</code></pre>
+                                <h4 class="details-title">Request Body</h4><pre><code>{
+    "nama": "string (optional)",
+    "password": "string (optional, min 6 chars)",
+    "nomorTelepon": "string (optional)",
+    "kecamatan": "string (optional)",
+    "domisili": "string (optional)",
+    "tglLahir": "string (date, optional)"
 }</code></pre>
-                        </div>
-                        <div id="superadmin-withdrawals-approve" class="endpoint-card">
-                            <div class="flex items-center gap-3 token-required">
-                                <span class="method-put font-bold text-sm px-2.5 py-1 rounded-full">PUT</span>
-                                <code class="text-md font-semibold text-gray-200">/superadmin/withdrawals/{id}/approve</code>
+                                <h4 class="details-title">Response (200)</h4><p>Mengembalikan objek pengguna yang diperbarui dengan field yang dipilih.</p>
                             </div>
-                            <p class="text-gray-400 mt-2">Menyetujui permintaan penarikan dana. Tidak memerlukan body.</p>
                         </div>
-                    </div>
-                </div>
+                        <div class="api-endpoint">
+                            <div class="endpoint-header">
+                                <div><span class="endpoint-method method-put">PUT</span><span class="endpoint-path">/api/users/me/picture</span></div><span class="badge badge-user">User Auth</span>
+                            </div>
+                            <div class="endpoint-details">
+                                <p>Memperbarui foto profil pengguna yang sedang terotentikasi.</p>
+                                <h4 class="details-title">Headers</h4><pre><code>{ "Authorization": "Bearer YOUR_JWT_TOKEN" }</code></pre>
+                                <h4 class="details-title">Request Body (form-data)</h4><pre><code>picture: file (required)</code></pre>
+                                <h4 class="details-title">Response (200)</h4><pre><code>{
+    "message": "Foto profil berhasil diperbarui.",
+    "pictureUrl": "string (url)"
+}</code></pre>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Admin User Management -->
+                    <section id="admin-users" class="api-section">
+                        <h2 class="text-3xl font-semibold mb-4">Admin: User Management</h2>
+                        <p class="mb-8 text-slate-500 max-w-3xl">Endpoint khusus admin untuk mengelola semua pengguna dalam sistem, termasuk persetujuan registrasi.</p>
+                        <div class="section-separator"></div>
+                        <div class="api-endpoint">
+                            <div class="endpoint-header">
+                                <div><span class="endpoint-method method-get">GET</span><span class="endpoint-path">/api/admin/users</span></div>
+                                <div><span class="badge badge-admin">ADMIN</span> <span class="badge badge-super-admin">SUPER ADMIN</span></div>
+                            </div>
+                            <div class="endpoint-details">
+                                <p>Mengambil daftar semua pengguna dengan paginasi. Dapat difilter berdasarkan status registrasi.</p>
+                                <h4 class="details-title">Headers</h4><pre><code>{ "Authorization": "Bearer YOUR_JWT_TOKEN" }</code></pre>
+                                <h4 class="details-title">Query Parameters</h4><pre><code>status: string (optional, PENDING | APPROVED | REJECTED)
+page: integer (optional, default: 1)
+pageSize: integer (optional, default: 10)</code></pre>
+                                <h4 class="details-title">Response (200)</h4><p>Mengembalikan daftar objek pengguna dengan paginasi.</p>
+                            </div>
+                        </div>
+                        <div class="api-endpoint">
+                            <div class="endpoint-header">
+                                <div><span class="endpoint-method method-put">PUT</span><span class="endpoint-path">/api/admin/users/:id</span></div>
+                                <div><span class="badge badge-admin">ADMIN</span> <span class="badge badge-super-admin">SUPER ADMIN</span></div>
+                            </div>
+                            <div class="endpoint-details">
+                                <p>Memperbarui detail pengguna tertentu.</p>
+                                <h4 class="details-title">Headers</h4><pre><code>{ "Authorization": "Bearer YOUR_JWT_TOKEN" }</code></pre>
+                                <h4 class="details-title">Request Body</h4><pre><code>{
+    "nama": "string",
+    "email": "string",
+    "role": "string (USER | ADMIN | SUPER_ADMIN)",
+    "balance": "decimal (SUPER_ADMIN only)",
+    "bankName": "string",
+    "noRekening": "string",
+    "nomorTelepon": "string"
+}</code></pre>
+                                <h4 class="details-title">Response (200)</h4><p>Mengembalikan objek pengguna yang telah diperbarui secara lengkap.</p>
+                            </div>
+                        </div>
+                         <div class="api-endpoint">
+                            <div class="endpoint-header">
+                                <div><span class="endpoint-method method-put">PUT</span><span class="endpoint-path">/api/admin/users/:id/approve</span></div>
+                                <div><span class="badge badge-admin">ADMIN</span> <span class="badge badge-super-admin">SUPER ADMIN</span></div>
+                            </div>
+                            <div class="endpoint-details">
+                                <p>Menyetujui registrasi pengguna.</p>
+                                <h4 class="details-title">Headers</h4><pre><code>{ "Authorization": "Bearer YOUR_JWT_TOKEN" }</code></pre>
+                                <h4 class="details-title">Response (200)</h4><pre><code>{ "message": "Registrasi user berhasil disetujui.", "user": { ...userObject } }</code></pre>
+                            </div>
+                        </div>
+                         <div class="api-endpoint">
+                            <div class="endpoint-header">
+                                <div><span class="endpoint-method method-put">PUT</span><span class="endpoint-path">/api/admin/users/:id/reject</span></div>
+                                <div><span class="badge badge-admin">ADMIN</span> <span class="badge badge-super-admin">SUPER ADMIN</span></div>
+                            </div>
+                            <div class="endpoint-details">
+                                <p>Menolak registrasi pengguna.</p>
+                                <h4 class="details-title">Headers</h4><pre><code>{ "Authorization": "Bearer YOUR_JWT_TOKEN" }</code></pre>
+                                <h4 class="details-title">Response (200)</h4><pre><code>{ "message": "Registrasi user berhasil ditolak.", "user": { ...userObject } }</code></pre>
+                            </div>
+                        </div>
+                    </section>
+                    
+                    <!-- YouTube Section -->
+                    <section id="youtube" class="api-section">
+                        <h2 class="text-3xl font-semibold mb-4">YouTube Links</h2>
+                        <p class="mb-8 text-slate-500 max-w-3xl">Manajemen link YouTube yang ditampilkan di aplikasi, termasuk riwayat perubahan.</p>
+                        <div class="section-separator"></div>
+                        <div class="api-endpoint">
+                            <div class="endpoint-header">
+                                <div><span class="endpoint-method method-get">GET</span><span class="endpoint-path">/api/youtube</span></div>
+                            </div>
+                            <div class="endpoint-details">
+                                <p>Mengambil entri link YouTube saat ini.</p>
+                                <h4 class="details-title">Response (200)</h4><pre><code>[
+    {
+        "id": "integer",
+        "urlYoutube": "string",
+        "tglDibuat": "datetime",
+        "creatorId": "integer",
+        "creator": { "nama": "string" }
+    }
+]</code></pre>
+                            </div>
+                        </div>
+                         <div class="api-endpoint">
+                            <div class="endpoint-header">
+                                <div><span class="endpoint-method method-post">POST</span><span class="endpoint-path">/api/admin/youtube</span></div>
+                                <div><span class="badge badge-admin">ADMIN</span> <span class="badge badge-super-admin">SUPER ADMIN</span></div>
+                            </div>
+                            <div class="endpoint-details">
+                                <p>Menetapkan link YouTube baru. Ini akan mengarsipkan link lama dan menghapusnya dari tabel utama.</p>
+                                <h4 class="details-title">Headers</h4><pre><code>{ "Authorization": "Bearer YOUR_JWT_TOKEN" }</code></pre>
+                                <h4 class="details-title">Request Body</h4><pre><code>{ "urlYoutube": "string (required)" }</code></pre>
+                                <h4 class="details-title">Response (201)</h4><p>Mengembalikan objek link YouTube yang baru dibuat.</p>
+                            </div>
+                        </div>
+                        <div class="api-endpoint">
+                            <div class="endpoint-header">
+                                <div><span class="endpoint-method method-put">PUT</span><span class="endpoint-path">/api/admin/youtube/:id</span></div>
+                                <div><span class="badge badge-admin">ADMIN</span> <span class="badge badge-super-admin">SUPER ADMIN</span></div>
+                            </div>
+                            <div class="endpoint-details">
+                                <p>Memperbarui link YouTube yang ada dan mengarsipkan versi sebelumnya.</p>
+                                <h4 class="details-title">Headers</h4><pre><code>{ "Authorization": "Bearer YOUR_JWT_TOKEN" }</code></pre>
+                                <h4 class="details-title">Request Body</h4><pre><code>{ "urlYoutube": "string (required)" }</code></pre>
+                                <h4 class="details-title">Response (200)</h4><p>Mengembalikan objek link YouTube yang diperbarui.</p>
+                            </div>
+                        </div>
+                        <div class="api-endpoint">
+                            <div class="endpoint-header">
+                                <div><span class="endpoint-method method-get">GET</span><span class="endpoint-path">/api/admin/history-youtube-apps</span></div>
+                                <div><span class="badge badge-admin">ADMIN</span> <span class="badge badge-super-admin">SUPER ADMIN</span></div>
+                            </div>
+                            <div class="endpoint-details">
+                                <p>Mengambil riwayat semua link YouTube sebelumnya dengan paginasi.</p>
+                                <h4 class="details-title">Headers</h4><pre><code>{ "Authorization": "Bearer YOUR_JWT_TOKEN" }</code></pre>
+                                <h4 class="details-title">Query Parameters</h4><pre><code>page: integer (optional, default: 1)
+pageSize: integer (optional, default: 20)</code></pre>
+                                <h4 class="details-title">Response (200)</h4><p>Mengembalikan daftar objek link YouTube historis dengan paginasi.</p>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Projects Section -->
+                    <section id="projects" class="api-section">
+                        <h2 class="text-3xl font-semibold mb-4">Projects</h2>
+                        <p class="mb-8 text-slate-500 max-w-3xl">Manajemen proyek yang tersedia untuk dikerjakan oleh pengguna.</p>
+                        <div class="section-separator"></div>
+                         <div class="api-endpoint">
+                            <div class="endpoint-header">
+                                <div><span class="endpoint-method method-get">GET</span><span class="endpoint-path">/api/projects</span></div>
+                            </div>
+                            <div class="endpoint-details">
+                                <p>Mengambil daftar semua proyek yang tersedia dengan paginasi.</p>
+                                <h4 class="details-title">Query Parameters</h4><pre><code>page: integer (optional, default: 1)
+pageSize: integer (optional, default: 10)</code></pre>
+                                <h4 class="details-title">Response (200)</h4><p>Mengembalikan daftar objek proyek dengan paginasi, termasuk field-fieldnya.</p>
+                            </div>
+                        </div>
+                         <div class="api-endpoint">
+                            <div class="endpoint-header">
+                                <div><span class="endpoint-method method-post">POST</span><span class="endpoint-path">/api/admin/projects</span></div>
+                                <div><span class="badge badge-admin">ADMIN</span> <span class="badge badge-super-admin">SUPER ADMIN</span></div>
+                            </div>
+                            <div class="endpoint-details">
+                                <p>Membuat proyek baru beserta field-field terkait.</p>
+                                <h4 class="details-title">Headers</h4><pre><code>{ "Authorization": "Bearer YOUR_JWT_TOKEN" }</code></pre>
+                                <h4 class="details-title">Request Body</h4><pre><code>{
+    "namaProyek": "string (required)",
+    "iconUrl": "string (optional)",
+    "projectUrl": "string (optional)",
+    "nilaiProyek": "decimal (required)",
+    "deskripsi": "string (optional)",
+    "category": "string (optional)",
+    "fields": [
+        {
+            "label": "string",
+            "fieldType": "string (e.g., TEXT, FILE)",
+            "isRequired": "boolean"
+        }
+    ]
+}</code></pre>
+                                <h4 class="details-title">Response (201)</h4><p>Mengembalikan objek proyek yang baru dibuat, termasuk field-fieldnya.</p>
+                            </div>
+                        </div>
+                         <div class="api-endpoint">
+                            <div class="endpoint-header">
+                                <div><span class="endpoint-method method-put">PUT</span><span class="endpoint-path">/api/admin/projects/:id</span></div>
+                                <div><span class="badge badge-admin">ADMIN</span> <span class="badge badge-super-admin">SUPER ADMIN</span></div>
+                            </div>
+                            <div class="endpoint-details">
+                                <p>Memperbarui proyek yang ada. Ini akan menghapus dan membuat ulang semua field terkait.</p>
+                                <h4 class="details-title">Headers</h4><pre><code>{ "Authorization": "Bearer YOUR_JWT_TOKEN" }</code></pre>
+                                <h4 class="details-title">Request Body</h4><p>Sama seperti request body POST.</p>
+                                <h4 class="details-title">Response (200)</h4><p>Mengembalikan objek proyek yang diperbarui.</p>
+                            </div>
+                        </div>
+                         <div class="api-endpoint">
+                            <div class="endpoint-header">
+                                <div><span class="endpoint-method method-delete">DELETE</span><span class="endpoint-path">/api/admin/projects/:id</span></div>
+                                <div><span class="badge badge-admin">ADMIN</span> <span class="badge badge-super-admin">SUPER ADMIN</span></div>
+                            </div>
+                            <div class="endpoint-details">
+                                <p>Menghapus proyek dan semua data terkait (field, submission, dll.).</p>
+                                <h4 class="details-title">Headers</h4><pre><code>{ "Authorization": "Bearer YOUR_JWT_TOKEN" }</code></pre>
+                                <h4 class="details-title">Response (200)</h4><pre><code>{ "message": "Proyek berhasil dihapus." }</code></pre>
+                            </div>
+                        </div>
+                    </section>
+
+                    <!-- Submissions Section -->
+                    <section id="submissions" class="api-section">
+                        <h2 class="text-3xl font-semibold mb-4">Submissions</h2>
+                        <p class="mb-8 text-slate-500 max-w-3xl">Endpoint untuk pengiriman dan peninjauan pengerjaan proyek oleh pengguna dan admin.</p>
+                        <div class="section-separator"></div>
+                        <div class="api-endpoint">
+                            <div class="endpoint-header">
+                                <div><span class="endpoint-method method-post">POST</span><span class="endpoint-path">/api/projects/:projectId/submit</span></div><span class="badge badge-user">User Auth</span>
+                            </div>
+                            <div class="endpoint-details">
+                                <p>Mengirimkan data pengguna untuk proyek tertentu. Membutuhkan multipart/form-data.</p>
+                                <h4 class="details-title">Headers</h4><pre><code>{ "Authorization": "Bearer YOUR_JWT_TOKEN" }</code></pre>
+                                <h4 class="details-title">Request Body (form-data)</h4>
+                                <p>Key harus berupa `projectFieldId` untuk proyek tersebut. Value adalah input pengguna atau file yang diunggah.</p>
+                                <pre><code>// Contoh
+"123": "Teks input pengguna", // di mana "123" adalah projectFieldId
+"124": file,              // di mana "124" adalah projectFieldId tipe FILE</code></pre>
+                                <h4 class="details-title">Response (201)</h4><pre><code>{ "message": "Pengerjaan berhasil dikirim.", "submission": { ...submissionObject } }</code></pre>
+                            </div>
+                        </div>
+                        <div class="api-endpoint">
+                            <div class="endpoint-header">
+                                <div><span class="endpoint-method method-get">GET</span><span class="endpoint-path">/api/users/me/submissions</span></div><span class="badge badge-user">User Auth</span>
+                            </div>
+                            <div class="endpoint-details">
+                                <p>Mengambil daftar submission dengan paginasi untuk pengguna yang sedang terotentikasi.</p>
+                                <h4 class="details-title">Headers</h4><pre><code>{ "Authorization": "Bearer YOUR_JWT_TOKEN" }</code></pre>
+                                <h4 class="details-title">Query Parameters</h4><pre><code>page: integer (optional, default: 1)
+perPage: integer (optional, default: 10)</code></pre>
+                                <h4 class="details-title">Response (200)</h4><p>Mengembalikan daftar submission pengguna dengan detail proyek dan paginasi.</p>
+                            </div>
+                        </div>
+                        <div class="api-endpoint">
+                            <div class="endpoint-header">
+                                <div><span class="endpoint-method method-get">GET</span><span class="endpoint-path">/api/admin/submissions</span></div>
+                                <div><span class="badge badge-admin">ADMIN</span> <span class="badge badge-super-admin">SUPER ADMIN</span></div>
+                            </div>
+                            <div class="endpoint-details">
+                                <p>Mengambil daftar semua submission dengan paginasi. Dapat difilter berdasarkan status.</p>
+                                <h4 class="details-title">Headers</h4><pre><code>{ "Authorization": "Bearer YOUR_JWT_TOKEN" }</code></pre>
+                                <h4 class="details-title">Query Parameters</h4><pre><code>status: string (optional, PENDING | APPROVED | REJECTED)
+page: integer (optional, default: 1)
+pageSize: integer (optional, default: 10)</code></pre>
+                                <h4 class="details-title">Response (200)</h4><p>Mengembalikan daftar semua submission dengan paginasi.</p>
+                            </div>
+                        </div>
+                        <div class="api-endpoint">
+                            <div class="endpoint-header">
+                                <div><span class="endpoint-method method-get">GET</span><span class="endpoint-path">/api/admin/submissions/:id</span></div>
+                                <div><span class="badge badge-admin">ADMIN</span> <span class="badge badge-super-admin">SUPER ADMIN</span></div>
+                            </div>
+                            <div class="endpoint-details">
+                                <p>Mengambil detail lengkap dari satu submission, termasuk semua nilai yang dikirimkan.</p>
+                                <h4 class="details-title">Headers</h4><pre><code>{ "Authorization": "Bearer YOUR_JWT_TOKEN" }</code></pre>
+                                <h4 class="details-title">Response (200)</h4><p>Mengembalikan objek submission yang terperinci.</p>
+                            </div>
+                        </div>
+                        <div class="api-endpoint">
+                            <div class="endpoint-header">
+                                <div><span class="endpoint-method method-put">PUT</span><span class="endpoint-path">/api/admin/submissions/:id/approve</span></div>
+                                <div><span class="badge badge-admin">ADMIN</span> <span class="badge badge-super-admin">SUPER ADMIN</span></div>
+                            </div>
+                            <div class="endpoint-details">
+                                <p>Menyetujui submission. Ini akan memicu pembayaran kepada pengguna, upline mereka, dan akun operasional.</p>
+                                <h4 class="details-title">Headers</h4><pre><code>{ "Authorization": "Bearer YOUR_JWT_TOKEN" }</code></pre>
+                                <h4 class="details-title">Response (200)</h4><pre><code>{ "message": "Submission ID ... berhasil disetujui.", "submission": { ...submissionObject } }</code></pre>
+                            </div>
+                        </div>
+                        <div class="api-endpoint">
+                            <div class="endpoint-header">
+                                <div><span class="endpoint-method method-put">PUT</span><span class="endpoint-path">/api/admin/submissions/:id/reject</span></div>
+                                <div><span class="badge badge-admin">ADMIN</span> <span class="badge badge-super-admin">SUPER ADMIN</span></div>
+                            </div>
+                            <div class="endpoint-details">
+                                <p>Menolak submission dan menambahkan catatan admin.</p>
+                                <h4 class="details-title">Headers</h4><pre><code>{ "Authorization": "Bearer YOUR_JWT_TOKEN" }</code></pre>
+                                <h4 class="details-title">Request Body</h4><pre><code>{ "catatanAdmin": "string (optional)" }</code></pre>
+                                <h4 class="details-title">Response (200)</h4><pre><code>{ "message": "Submission berhasil ditolak.", "submission": { ...submissionObject } }</code></pre>
+                            </div>
+                        </div>
+                    </section>
+                    
+                    <!-- Withdrawals Section -->
+                    <section id="withdrawals" class="api-section">
+                        <h2 class="text-3xl font-semibold mb-4">Withdrawals</h2>
+                        <p class="mb-8 text-slate-500 max-w-3xl">Endpoint Super Admin untuk mengelola permintaan penarikan dana oleh pengguna.</p>
+                        <div class="section-separator"></div>
+                        <div class="api-endpoint">
+                            <div class="endpoint-header">
+                                <div><span class="endpoint-method method-get">GET</span><span class="endpoint-path">/api/superadmin/withdrawals</span></div><span class="badge badge-super-admin">SUPER ADMIN</span>
+                            </div>
+                            <div class="endpoint-details">
+                                <p>Mengambil semua permintaan penarikan. Dapat difilter berdasarkan status.</p>
+                                <h4 class="details-title">Headers</h4><pre><code>{ "Authorization": "Bearer YOUR_JWT_TOKEN" }</code></pre>
+                                <h4 class="details-title">Query Parameters</h4><pre><code>status: string (optional, PENDING | APPROVED | REJECTED)</code></pre>
+                                <h4 class="details-title">Response (200)</h4><p>Mengembalikan daftar objek penarikan.</p>
+                            </div>
+                        </div>
+                        <div class="api-endpoint">
+                            <div class="endpoint-header">
+                                <div><span class="endpoint-method method-put">PUT</span><span class="endpoint-path">/api/superadmin/withdrawals/:id/approve</span></div><span class="badge badge-super-admin">SUPER ADMIN</span>
+                            </div>
+                            <div class="endpoint-details">
+                                <p>Menyetujui permintaan penarikan, mengurangi jumlah dari saldo pengguna, dan membuat catatan transaksi.</p>
+                                <h4 class="details-title">Headers</h4><pre><code>{ "Authorization": "Bearer YOUR_JWT_TOKEN" }</code></pre>
+                                <h4 class="details-title">Response (200)</h4><pre><code>{ "message": "Permintaan penarikan berhasil disetujui." }</code></pre>
+                            </div>
+                        </div>
+                    </section>
+                </main>
             </div>
-        </main>
+        </div>
     </div>
 
     <script>
-        document.getElementById('download-btn').addEventListener('click', function() {
-            const btn = this;
-            const originalText = btn.innerHTML;
-            btn.disabled = true;
-            btn.innerHTML = 'Mempersiapkan PDF...';
-
-            btn.style.visibility = 'hidden';
-
-            const content = document.getElementById('api-content');
+        // Script untuk unduh PDF
+        document.getElementById('download-pdf').addEventListener('click', () => {
+            const { jsPDF } = window.jspdf;
+            const mainContent = document.getElementById('main-content');
+            const button = document.getElementById('download-pdf');
             
-            html2canvas(content, {
+            button.style.visibility = 'hidden'; // Sembunyikan tombol
+
+            html2canvas(mainContent, {
                 scale: 2,
                 useCORS: true,
-                backgroundColor: '#1a101f',
-                onclone: (document) => {
-                    document.body.style.background = '#1a101f';
-                }
+                backgroundColor: null // Gunakan background dari elemen
             }).then(canvas => {
+                button.style.visibility = 'visible'; // Tampilkan kembali
+
                 const imgData = canvas.toDataURL('image/png');
-                const { jsPDF } = window.jspdf;
-                
                 const pdf = new jsPDF({
                     orientation: 'p',
                     unit: 'px',
                     format: [canvas.width, canvas.height]
                 });
-
                 pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
-                pdf.save('thebaxlancer_api_docs.pdf');
-
-                btn.style.visibility = 'visible';
-                btn.disabled = false;
-                btn.innerHTML = originalText;
+                pdf.save('bax-api-documentation.pdf');
             }).catch(err => {
+                button.style.visibility = 'visible';
                 console.error("Gagal membuat PDF:", err);
-                alert("Gagal membuat PDF. Silakan coba lagi.");
-                btn.style.visibility = 'visible';
-                btn.disabled = false;
-                btn.innerHTML = originalText;
+                alert("Tidak dapat membuat PDF. Lihat konsol untuk detail.");
+            });
+        });
+
+        // Script untuk 'scroll spy' pada sidebar
+        window.addEventListener('DOMContentLoaded', () => {
+            const sections = document.querySelectorAll('section[id]');
+            const navLinks = document.querySelectorAll('aside nav a');
+
+            const activateLink = (id) => {
+                navLinks.forEach(link => {
+                    link.classList.remove('active');
+                    if (link.getAttribute('href') === `#${id}`) {
+                        link.classList.add('active');
+                    }
+                });
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        activateLink(entry.target.id);
+                    }
+                });
+            }, { rootMargin: "0px 0px -60% 0px" });
+
+            sections.forEach(section => {
+                observer.observe(section);
             });
         });
     </script>
-
 </body>
 </html>
