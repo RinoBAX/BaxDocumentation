@@ -347,7 +347,7 @@ imageNewsUrl: string</code></pre>
                     <!-- User Section -->
                     <section id="users" class="api-section">
                         <h2 class="text-3xl font-semibold mb-4">Users</h2>
-                        <p class="mb-8 text-slate-500 max-w-3xl">Endpoint yang berkaitan dengan data pengguna yang sedang login, seperti profil dan downline.</p>
+                        <p class="mb-8 text-slate-500 max-w-3xl">Endpoint yang berkaitan dengan data pengguna yang sedang login, seperti profil, downline, dan penarikan dana.</p>
                         <div class="section-separator"></div>
                          <div class="api-endpoint">
                             <div class="endpoint-header">
@@ -422,6 +422,29 @@ perPage: integer (optional, default: 10)</code></pre>
                                 <h4 class="details-title">Response (200)</h4><pre><code>{
     "message": "Foto profil berhasil diperbarui.",
     "pictureUrl": "string (url)"
+}</code></pre>
+                            </div>
+                        </div>
+                        <div class="api-endpoint">
+                            <div class="endpoint-header">
+                                <div><span class="endpoint-method method-post">POST</span><span class="endpoint-path">/api/users/me/withdrawals</span></div><span class="badge badge-user">User Auth</span>
+                            </div>
+                            <div class="endpoint-details">
+                                <p>Mengajukan permintaan penarikan dana dari saldo pengguna. Permintaan akan masuk ke status 'PENDING' untuk disetujui oleh Super Admin.</p>
+                                <h4 class="details-title">Headers</h4><pre><code>{ "Authorization": "Bearer YOUR_JWT_TOKEN" }</code></pre>
+                                <h4 class="details-title">Request Body</h4><pre><code>{
+    "totalWithdrawal": "decimal (required)"
+}</code></pre>
+                                <h4 class="details-title">Response (201)</h4><pre><code>{
+    "message": "Permintaan penarikan berhasil diajukan dan akan segera diproses.",
+    "withdrawal": {
+        "id": "integer",
+        "userId": "integer",
+        "totalWithdrawal": "decimal",
+        "status": "PENDING",
+        "tglDiajukan": "datetime",
+        "tglDiproses": null
+    }
 }</code></pre>
                             </div>
                         </div>
